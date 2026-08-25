@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routes.url_analysis import router as url_analysis_router
+
 app = FastAPI(
     title="Phishing Detection Platform",
     description="Analyze URLs and emails for common phishing indicators.",
@@ -14,6 +16,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(url_analysis_router)
 
 
 @app.get("/")
