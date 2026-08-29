@@ -46,3 +46,15 @@ def test_multiple_patterns_are_detected():
 
     assert "URL_IP_ADDRESS" in codes
     assert "URL_SUSPICIOUS_KEYWORDS" in codes
+
+
+def test_shortened_url_is_detected():
+    codes = get_finding_codes("https://bit.ly/example-link")
+
+    assert "URL_SHORTENED_LINK" in codes
+
+
+def test_normal_subdomain_is_not_marked_as_shortened():
+    codes = get_finding_codes("https://news.example.com/article")
+
+    assert "URL_SHORTENED_LINK" not in codes
