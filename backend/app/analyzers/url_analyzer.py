@@ -17,6 +17,19 @@ SUSPICIOUS_KEYWORDS = {
     "verify",
 }
 
+SHORTENER_DOMAINS = {
+    "bit.ly",
+    "buff.ly",
+    "cutt.ly",
+    "is.gd",
+    "ow.ly",
+    "rebrand.ly",
+    "shorturl.at",
+    "t.co",
+    "tiny.cc",
+    "tinyurl.com",
+}
+
 
 def uses_ip_address(hostname: str) -> bool:
     try:
@@ -32,6 +45,24 @@ def analyze_url(url: str) -> list[SecurityFinding]:
     lowercase_url = url.lower()
 
     findings: list[SecurityFinding] = []
+
+    if hostname.lower() in SHORTENER_DOMAINS:
+        findings.append(
+            SecurityFinding(
+                code="URL_SHORTENED_LINK",
+                title="Shortened URL detected",
+                severity="MEDIUM",
+                description=(
+                    "This URL uses a link-shortening service that hides "
+                    "the final destination."
+                ),
+                recommendation=(
+                    "Expand the shortened link using a trusted preview "
+                    "service before opening it."
+                ),
+                score=20,
+            )
+        )
 
     if uses_ip_address(hostname):
         findings.append(
