@@ -46,6 +46,23 @@ def analyze_url(url: str) -> list[SecurityFinding]:
 
     findings: list[SecurityFinding] = []
 
+    if parsed_url.scheme.lower() == "http":
+        findings.append(
+            SecurityFinding(
+                code="URL_INSECURE_HTTP",
+                title="URL does not use HTTPS",
+                severity="LOW",
+                description=(
+                    "The URL uses an unencrypted HTTP connection."
+                ),
+                recommendation=(
+                    "Avoid entering passwords or personal information "
+                    "on websites that do not use HTTPS."
+                ),
+                score=5,
+            )
+        )
+
     if hostname.lower() in SHORTENER_DOMAINS:
         findings.append(
             SecurityFinding(
