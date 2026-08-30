@@ -1,4 +1,8 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field, HttpUrl
+
+from app.models.finding import SecurityFinding
 
 
 class URLScanRequest(BaseModel):
@@ -11,4 +15,7 @@ class URLScanRequest(BaseModel):
 
 class URLScanResponse(BaseModel):
     url: str
-    message: str
+    risk_score: int = Field(ge=0, le=100)
+    risk_level: Literal["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    finding_count: int = Field(ge=0)
+    findings: list[SecurityFinding]
