@@ -39,6 +39,19 @@ def uses_ip_address(hostname: str) -> bool:
         return False
 
 
+def uses_punycode(hostname: str) -> bool:
+    labels = hostname.lower().split(".")
+    return any(label.startswith("xn--") for label in labels)
+
+
+def has_excessive_subdomains(hostname: str) -> bool:
+    if uses_ip_address(hostname):
+        return False
+
+    labels = [label for label in hostname.split(".") if label]
+    return len(labels) > 4
+
+
 def analyze_url(url: str) -> list[SecurityFinding]:
     parsed_url = urlparse(url)
     hostname = parsed_url.hostname or ""
@@ -94,6 +107,42 @@ def analyze_url(url: str) -> list[SecurityFinding]:
                     "Avoid opening the URL until its destination has been verified."
                 ),
                 score=30,
+            )
+        )
+
+    if uses_punycode(hostname):
+        findings.append(
+            SecurityFinding(
+                code="URL_PUNYCODE_DOMAIN",
+                title="Punycode domain detected",
+                severity="HIGH",
+                description=(
+                    "The domain uses Punycode characters, which can be used "
+                    "to imitate the appearance of a trusted domain."
+                ),
+                recommendation=(
+                    "Verify the domain carefully before entering personal "
+                    "information or login credentials."
+                ),
+                score=25,
+            )
+        )
+
+    if has_excessive_subdomains(hostname):
+        findings.append(
+            SecurityFinding(
+                code="URL_EXCESSIVE_SUBDOMAINS",
+                title="Excessive number of subdomains",
+                severity="MEDIUM",
+                description=(
+                    "The hostname contains an unusually large number "
+                    "of domain sections."
+                ),
+                recommendation=(
+                    "Read the hostname from right to left and verify "
+                    "the actual registered domain."
+                ),
+                score=15,
             )
         )
 
