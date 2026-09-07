@@ -29,6 +29,7 @@ def analyze_submitted_email(
     request: EmailScanRequest,
 ) -> EmailScanResponse:
     findings, urls = analyze_email(
+        sender=request.sender,
         subject=request.subject,
         body=request.body,
     )
