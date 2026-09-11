@@ -2,6 +2,11 @@ from fastapi import APIRouter
 
 from app.analyzers.url_analyzer import analyze_url
 from app.models.url_scan import URLScanRequest, URLScanResponse
+from app.services.risk_scoring import (
+    calculate_risk_score,
+    get_risk_level,
+)
+
 
 router = APIRouter(
     prefix="/api/analyze",
@@ -9,21 +14,13 @@ router = APIRouter(
 )
 
 
-def get_risk_level(score: int) -> str:
-    if score >= 75:
-        return "CRITICAL"
-    if score >= 50:
-        return "HIGH"
-    if score >= 25:
-        return "MEDIUM"
-    return "LOW"
-
-
 @router.post("/url", response_model=URLScanResponse)
-def analyze_submitted_url(request: URLScanRequest):
+def analyze_submitted_url(
+    request: URLScanRequest,
+) -> URLScanResponse:
     url = str(request.url)
     findings = analyze_url(url)
-    risk_score = min(sum(finding.score for finding in findings), 100)
+    risk_score = calculate_risk_score(findings)
 
     return URLScanResponse(
         url=url,

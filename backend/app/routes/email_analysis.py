@@ -1,27 +1,17 @@
-from typing import Literal
-
 from fastapi import APIRouter
 
 from app.analyzers.email_analyzer import analyze_email
 from app.models.email_scan import EmailScanRequest, EmailScanResponse
+from app.services.risk_scoring import (
+    calculate_risk_score,
+    get_risk_level,
+)
 
 
 router = APIRouter(
     prefix="/api/analyze",
     tags=["Email Analysis"],
 )
-
-
-def get_risk_level(
-    score: int,
-) -> Literal["LOW", "MEDIUM", "HIGH", "CRITICAL"]:
-    if score >= 75:
-        return "CRITICAL"
-    if score >= 50:
-        return "HIGH"
-    if score >= 25:
-        return "MEDIUM"
-    return "LOW"
 
 
 @router.post("/email", response_model=EmailScanResponse)
@@ -34,10 +24,7 @@ def analyze_submitted_email(
         body=request.body,
     )
 
-    risk_score = min(
-        sum(finding.score for finding in findings),
-        100,
-    )
+    risk_score = calculate_risk_score(findings)
 
     return EmailScanResponse(
         sender=request.sender,
