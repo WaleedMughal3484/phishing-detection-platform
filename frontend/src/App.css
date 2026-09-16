@@ -313,3 +313,23 @@ textarea {
     flex-direction: column;
   }
 }
+
+.sample-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sample-actions button {
+  padding: 9px 13px;
+  border: 1px solid #2b4059;
+  border-radius: 8px;
+  color: #b9c8d9;
+  background: #0b192b;
+}
+
+.sample-actions button:hover {
+  border-color: #5eead4;
+  color: #5eead4;
+}

@@ -1,5 +1,10 @@
 import { useState } from "react";
 
+import {
+  SAFE_URL_SAMPLE,
+  SUSPICIOUS_EMAIL_SAMPLE,
+  SUSPICIOUS_URL_SAMPLE,
+} from "./data/sampleData.js";
 import { analyzeEmail, analyzeUrl } from "./services/api.js";
 import "./App.css";
 
@@ -34,6 +39,38 @@ function App() {
       ...currentEmail,
       [name]: value,
     }));
+  }
+
+
+  function loadSafeUrl() {
+    setAnalysisType("url");
+    setUrl(SAFE_URL_SAMPLE);
+    setResult(null);
+    setError("");
+  }
+
+
+  function loadSuspiciousUrl() {
+    setAnalysisType("url");
+    setUrl(SUSPICIOUS_URL_SAMPLE);
+    setResult(null);
+    setError("");
+  }
+
+
+  function loadSuspiciousEmail() {
+    setAnalysisType("email");
+    setEmail(SUSPICIOUS_EMAIL_SAMPLE);
+    setResult(null);
+    setError("");
+  }
+
+
+  function clearForm() {
+    setUrl("");
+    setEmail(EMPTY_EMAIL);
+    setResult(null);
+    setError("");
   }
 
 
@@ -101,6 +138,40 @@ function App() {
             type="button"
           >
             Analyze Email
+          </button>
+        </div>
+
+        <div className="sample-actions">
+          {analysisType === "url" ? (
+            <>
+              <button
+                type="button"
+                onClick={loadSafeUrl}
+              >
+                Try safe URL
+              </button>
+
+              <button
+                type="button"
+                onClick={loadSuspiciousUrl}
+              >
+                Try suspicious URL
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={loadSuspiciousEmail}
+            >
+              Try suspicious email
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={clearForm}
+          >
+            Clear
           </button>
         </div>
 
@@ -238,9 +309,7 @@ function App() {
                       </span>
                     </div>
 
-                    <p>
-                      {finding.description}
-                    </p>
+                    <p>{finding.description}</p>
 
                     <div className="recommendation">
                       <strong>
