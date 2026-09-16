@@ -12,6 +12,18 @@ def test_normal_url_has_no_findings():
     assert findings == []
 
 
+def test_http_url_is_detected():
+    codes = get_finding_codes("http://example.com/")
+
+    assert "URL_INSECURE_HTTP" in codes
+
+
+def test_https_url_is_not_marked_as_insecure():
+    codes = get_finding_codes("https://example.com/")
+
+    assert "URL_INSECURE_HTTP" not in codes
+
+
 def test_ip_address_is_detected():
     codes = get_finding_codes("http://192.0.2.1/")
 
@@ -44,6 +56,7 @@ def test_multiple_patterns_are_detected():
         "http://192.0.2.1/secure/account/verify"
     )
 
+    assert "URL_INSECURE_HTTP" in codes
     assert "URL_IP_ADDRESS" in codes
     assert "URL_SUSPICIOUS_KEYWORDS" in codes
 
