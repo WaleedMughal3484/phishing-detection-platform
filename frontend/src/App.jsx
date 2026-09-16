@@ -15,12 +15,28 @@ const EMPTY_EMAIL = {
   body: "",
 };
 
+const HISTORY_KEY = "phishing-scan-history";
+
+
+function loadHistory() {
+  try {
+    const savedHistory = localStorage.getItem(HISTORY_KEY);
+
+    return savedHistory
+      ? JSON.parse(savedHistory)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 
 function App() {
   const [analysisType, setAnalysisType] = useState("url");
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState(EMPTY_EMAIL);
   const [result, setResult] = useState(null);
+  const [history, setHistory] = useState(loadHistory);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -74,6 +90,40 @@ function App() {
   }
 
 
+  function saveHistory(analysisResult) {
+    const historyItem = {
+      id: crypto.randomUUID(),
+      type: analysisType,
+      label:
+        analysisType === "url"
+          ? url
+          : "Email analysis",
+      riskScore: analysisResult.risk_score,
+      riskLevel: analysisResult.risk_level,
+      findingCount: analysisResult.finding_count,
+      createdAt: new Date().toISOString(),
+    };
+
+    const updatedHistory = [
+      historyItem,
+      ...history,
+    ].slice(0, 5);
+
+    setHistory(updatedHistory);
+
+    localStorage.setItem(
+      HISTORY_KEY,
+      JSON.stringify(updatedHistory)
+    );
+  }
+
+
+  function clearHistory() {
+    setHistory([]);
+    localStorage.removeItem(HISTORY_KEY);
+  }
+
+
   async function submitAnalysis(event) {
     event.preventDefault();
 
@@ -88,6 +138,7 @@ function App() {
           : await analyzeEmail(email);
 
       setResult(analysisResult);
+      saveHistory(analysisResult);
     } catch (requestError) {
       setError(
         requestError.message ||
@@ -324,6 +375,62 @@ function App() {
                 )
               )
             )}
+          </div>
+        </section>
+      )}
+
+      {history.length > 0 && (
+        <section className="history">
+          <div className="history-heading">
+            <div>
+              <p className="eyebrow">
+                Stored locally
+              </p>
+              <h2>Recent scans</h2>
+            </div>
+
+            <button
+              type="button"
+              onClick={clearHistory}
+            >
+              Clear history
+            </button>
+          </div>
+
+          <div className="history-list">
+            {history.map((item) => (
+              <article
+                className="history-item"
+                key={item.id}
+              >
+                <div>
+                  <strong>
+                    {item.type === "url"
+                      ? "URL scan"
+                      : "Email scan"}
+                  </strong>
+
+                  <p title={item.label}>
+                    {item.label}
+                  </p>
+                </div>
+
+                <div className="history-result">
+                  <span
+                    className={
+                      `risk-${item.riskLevel.toLowerCase()}`
+                    }
+                  >
+                    {item.riskLevel}
+                  </span>
+
+                  <small>
+                    {item.riskScore}/100 ·{" "}
+                    {item.findingCount} findings
+                  </small>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
       )}

@@ -333,3 +333,98 @@ textarea {
   border-color: #5eead4;
   color: #5eead4;
 }
+.history {
+  margin-top: 24px;
+  padding: 28px;
+  border: 1px solid #21354d;
+  border-radius: 18px;
+  background: rgb(10 25 43 / 88%);
+}
+
+.history-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.history-heading h2 {
+  margin: 0;
+}
+
+.history-heading .eyebrow {
+  margin-top: 0;
+}
+
+.history-heading button {
+  padding: 9px 13px;
+  border: 1px solid #2b4059;
+  border-radius: 8px;
+  color: #fca5a5;
+  background: #0b192b;
+}
+
+.history-heading button:hover {
+  border-color: #ef4444;
+}
+
+.history-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px;
+  border: 1px solid #1d3149;
+  border-radius: 10px;
+  background: #07111f;
+}
+
+.history-item p {
+  max-width: 580px;
+  margin: 5px 0 0;
+  overflow: hidden;
+  color: #8ea1b7;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-result {
+  display: grid;
+  gap: 4px;
+  min-width: 120px;
+  text-align: right;
+}
+
+.history-result span {
+  font-weight: 800;
+}
+
+.history-result small {
+  color: #8ea1b7;
+}
+
+@media (max-width: 650px) {
+  .history {
+    padding: 18px;
+  }
+
+  .history-heading,
+  .history-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .history-result {
+    text-align: left;
+  }
+
+  .history-item p {
+    max-width: 250px;
+  }
+}
